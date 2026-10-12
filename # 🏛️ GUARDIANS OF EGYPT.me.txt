@@ -1,0 +1,71 @@
+# 🏛️ GUARDIANS OF EGYPT
+
+### Discover. Explore. Preserve.
+
+## About the Project
+
+Guardians of Egypt is a tourism and cultural heritage awareness
+campaign developed as part of the DEPI Digital Marketing Specialist
+graduation project.
+
+Our mission is to encourage people to discover Egypt's historical
+destinations, explore its hidden gems, and understand the importance
+of preserving its cultural heritage.
+
+## Our Campaigns
+
+### 1. Egypt Uncovered
+Discover lesser-known destinations and hidden gems across Egypt.
+
+### 2. Discover Egypt
+Explore verified archaeological discoveries and new tourism
+developments.
+
+### 3. Revive Egypt
+Raise awareness about archaeological restoration, heritage
+preservation, and responsible tourism.
+
+## Website Features
+
+- Interactive website
+- Interactive map of Egyptian historical sites
+- 3D visualizations
+- Heritage discovery timeline
+- Guardian's Trial mini-game
+- Golden Ticket reward
+- Interactive travel journey
+- Guardian Pledge
+- Social media integration
+
+## Technologies
+
+- HTML5
+- CSS3
+- JavaScript
+- Leaflet.js
+- Three.js or Model Viewer, if implemented
+- GitHub
+- GitHub Pages
+
+## Social Media
+
+Facebook: []
+
+Instagram: []
+
+TikTok: []
+
+## Team
+
+DEPI Digital Marketing Specialist Graduation Project.
+
+Team Members:
+1. [Abdallah ahmed hamdy]
+2. [Mostafa ahmed]
+3. [Farah hany]
+4. [Eman ashraf]
+
+## Project Mission
+
+Discover Egypt's treasures, explore its stories, and preserve its
+heritage for future generations.
