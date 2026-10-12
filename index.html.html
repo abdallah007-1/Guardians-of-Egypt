@@ -23,6 +23,10 @@ EXTERNAL DEPENDENCIES (all optional except Leaflet for the map):
  7. Three.js r128 ........ 3D experience (procedural geometry, no model file needed)
  8. three OrbitControls .. camera controls for the 3D scene
  9. three GLTFLoader ..... ONLY used if CONFIG.modelGLB is filled in
+10. Wikipedia REST API .... real photographs (Wikimedia Commons, free licences)
+11. Sketchfab embeds ...... real 3D models (credited beside each model)
+12. YouTube (no-cookie) ... video tours, only when a video id/link is attached
+13. Google Maps embed ..... satellite view used by the Tours section
 Each dependency is guarded at runtime: if it fails to load the website keeps
 working and shows a friendly fallback instead of an error.
 =============================================================================
@@ -557,6 +561,90 @@ body.presentation .card,body.presentation .camp,body.presentation .concept{borde
 body.presentation .hero-title{filter:drop-shadow(0 0 42px rgba(212,167,44,.3))}
 
 /* =========================================================================
+   18b. NEW · REAL PHOTOS, TOURS, ANIMATED GUIDES
+   ========================================================================= */
+.card-art{position:relative;overflow:hidden;border-radius:var(--radius-sm)}
+.card-art svg{width:100%;height:100%;display:block}
+.art-caption{z-index:3}
+img.real-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s var(--ease),transform 1.4s var(--ease);z-index:1}
+img.real-photo.ok{opacity:1}
+.has-photo::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,transparent 55%,rgba(5,7,11,.75));box-shadow:inset 0 0 0 1px rgba(212,167,44,.28)}
+.card:hover img.real-photo.ok,.tour-item:hover img.real-photo.ok{transform:scale(1.07)}
+.photo-credit a{color:var(--gold-light);border-bottom:1px dotted rgba(242,205,107,.45)}
+.hero-photo{position:absolute;inset:0;z-index:0;overflow:hidden;background:#05070B}
+.hero-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.05);transition:opacity 2.2s ease;filter:saturate(.85) brightness(.5)}
+.hero-photo img.on{opacity:.62;animation:kenburns 24s ease-in-out infinite alternate}
+@keyframes kenburns{to{transform:scale(1.18) translate(-1.5%,-1%)}}
+.hero-photo::after{content:"";position:absolute;inset:0;background:radial-gradient(900px 500px at 20% 50%,rgba(5,7,11,.7),transparent 70%),linear-gradient(180deg,rgba(5,7,11,.6),rgba(5,7,11,.1) 38%,rgba(8,10,15,.96))}
+.hero-credit{position:absolute;right:14px;bottom:8px;z-index:6;font-size:.62rem;letter-spacing:.08em;color:rgba(255,255,255,.55);opacity:0;transition:opacity 1s}
+.hero-credit.on{opacity:1}
+.hero-credit:hover{color:var(--gold-light)}
+/* tours */
+.tour-layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px;align-items:start}
+.tour-list{display:flex;flex-direction:column;gap:8px;max-height:620px;overflow:auto;padding-right:6px}
+.tour-item{display:flex;gap:12px;align-items:center;text-align:left;padding:8px;border:1px solid var(--line-soft);border-radius:14px;background:rgba(255,255,255,.03);transition:.25s var(--ease);color:var(--ivory)}
+.tour-item:hover{border-color:var(--gold);transform:translateX(3px)}
+.tour-item.active{border-color:var(--gold);background:linear-gradient(135deg,rgba(242,205,107,.18),rgba(212,167,44,.05))}
+.tour-item .th{width:68px;height:50px;border-radius:9px;overflow:hidden;position:relative;flex:0 0 auto;background:#0A0D13}
+.tour-item .th svg{width:100%;height:100%;display:block}
+.tour-item b{display:block;font-size:.84rem;line-height:1.25}
+.tour-item small{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px}
+.tour-item .tag{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:99px;border:1px solid var(--line-soft);color:var(--muted)}
+.tour-item .tag.t3d{color:var(--nile-light);border-color:rgba(87,220,209,.45)}
+.tour-item .tag.tvid{color:var(--gold-light);border-color:var(--line)}
+.tour-stage{position:relative;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:radial-gradient(circle at 50% 20%,#141C28,#070A0F 70%);box-shadow:var(--shadow-sm)}
+.tour-head{display:flex;gap:10px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;padding:14px 16px 4px}
+.tour-head h3{margin:0;font-size:1.2rem}
+.tour-modes{display:flex;gap:8px;flex-wrap:wrap;padding:6px 16px 12px}
+.tour-frame{position:relative;height:clamp(300px,52vh,520px);background:#05070B}
+.tour-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.tour-poster{position:absolute;inset:0;display:grid;place-items:center;cursor:pointer;background:#0A0D13;border:0;width:100%;color:#fff}
+.tour-poster .play{position:relative;z-index:4;display:grid;gap:10px;place-items:center;text-align:center;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;text-shadow:0 2px 12px #000}
+.tour-poster .play i{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;font-size:1.5rem;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#151005;box-shadow:0 0 0 10px rgba(212,167,44,.2);animation:pulse 2.4s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 20px rgba(212,167,44,0)}}
+.tour-bar{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--line-soft);align-items:center}
+.tour-paste{display:flex;gap:8px;flex-wrap:wrap;padding:0 16px 14px}
+.tour-paste input{flex:1 1 220px;min-width:0;padding:9px 14px;border-radius:999px;border:1px solid var(--line-soft);background:rgba(255,255,255,.04);font-size:.8rem}
+.tour-paste input:focus{border-color:var(--gold);outline:0}
+/* animated guides */
+.guide{position:fixed;left:14px;bottom:108px;z-index:960;display:flex;align-items:flex-end;gap:4px;pointer-events:none;max-width:min(440px,calc(100vw - 20px))}
+.guide>*{pointer-events:auto}
+.guide-fig{position:relative;width:108px;height:146px;flex:0 0 auto;cursor:pointer;filter:drop-shadow(0 14px 16px rgba(0,0,0,.6));transform:translateY(70px) scale(.8);opacity:0;visibility:hidden;transition:transform .7s cubic-bezier(.34,1.56,.64,1),opacity .4s,visibility 0s .7s}
+.guide.show .guide-fig{transform:none;opacity:1;visibility:visible;transition:transform .7s cubic-bezier(.34,1.56,.64,1),opacity .4s,visibility 0s}
+.guide-fig svg{width:100%;height:100%;overflow:visible;display:block}
+.guide-bubble{position:relative;margin-bottom:58px;background:rgba(12,17,24,.97);border:1px solid var(--gold);border-radius:16px 16px 16px 4px;padding:12px 30px 12px 14px;box-shadow:var(--shadow),0 0 0 4px rgba(212,167,44,.08);max-width:300px;opacity:0;transform:translateY(10px) scale(.95);transform-origin:left bottom;transition:opacity .35s var(--ease),transform .35s var(--ease),visibility 0s .35s;visibility:hidden}
+.guide.talk .guide-bubble{opacity:1;transform:none;visibility:visible;transition:opacity .35s var(--ease),transform .35s var(--ease),visibility 0s}
+.guide-bubble::before{content:"";position:absolute;left:-9px;bottom:14px;border:9px solid transparent;border-right-color:var(--gold);border-left:0}
+.guide.t-ok .guide-bubble{border-color:var(--nile-light)}.guide.t-ok .guide-bubble::before{border-right-color:var(--nile-light)}
+.guide.t-warn .guide-bubble{border-color:#F0A483}.guide.t-warn .guide-bubble::before{border-right-color:#F0A483}
+.guide-name{font-family:var(--font-display);font-size:.7rem;letter-spacing:.14em;color:var(--gold-light);text-transform:uppercase}
+.guide-name small{display:block;font-family:var(--font-body);font-size:.62rem;letter-spacing:.1em;color:var(--muted-2)}
+.guide-text{font-size:.84rem;line-height:1.5;margin:6px 0 0;color:#EDE6D6}
+.guide-act{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.guide-act:empty{display:none}
+.guide-x{position:absolute;top:6px;right:8px;width:22px;height:22px;border-radius:50%;color:var(--muted);font-size:1rem;line-height:1}
+.guide-x:hover{color:var(--gold-light)}
+.guide-fab{position:fixed;left:14px;bottom:108px;z-index:955;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:var(--gold-light);background:rgba(10,14,20,.92);border:1px solid var(--line);box-shadow:var(--shadow-sm);transition:.3s var(--ease);font-size:1.1rem}
+.guide-fab:hover{border-color:var(--gold);transform:translateY(-3px) scale(1.06)}
+.guide.show~.guide-fab{opacity:0;pointer-events:none;transform:scale(.6)}
+.guide-off .guide,.guide-off .guide-fab{display:none}
+.fig-body{animation:figBob 3.4s ease-in-out infinite;transform-origin:60px 150px}
+@keyframes figBob{50%{transform:translateY(-4px)}}
+.fig-lid{transform-box:fill-box;transform-origin:50% 0;transform:scaleY(0);animation:figBlink 5s infinite}
+@keyframes figBlink{0%,92%,100%{transform:scaleY(0)}95%{transform:scaleY(1)}}
+.fig-mouth{transform-box:fill-box;transform-origin:center}
+.guide.talk .fig-mouth{animation:figTalk .26s ease-in-out infinite alternate}
+@keyframes figTalk{to{transform:scaleY(2.6)}}
+.fig-arm{transform-box:fill-box;transform-origin:15% 95%}
+.guide.talk .fig-arm{animation:figWave .75s ease-in-out infinite alternate}
+@keyframes figWave{from{transform:rotate(-10deg)}to{transform:rotate(14deg)}}
+.fig-glow{animation:figGlow 2.6s ease-in-out infinite}
+@keyframes figGlow{50%{opacity:.35}}
+@media (max-width:860px){.guide,.guide-fab{bottom:100px}}
+@media (max-width:620px){.demo-dock{right:8px;gap:6px}.dock-btn{padding:7px 11px;font-size:.62rem;letter-spacing:.05em}.guide-fig{width:84px;height:114px}.guide-bubble{margin-bottom:44px;max-width:min(250px,calc(100vw - 112px))}}
+@media (max-width:900px){.tour-layout{grid-template-columns:1fr}.tour-list{flex-direction:row;max-height:none;overflow-x:auto;padding:0 0 8px}.tour-item{min-width:224px}}
+
+/* =========================================================================
    19. RESPONSIVE
    ========================================================================= */
 @media (max-width:1080px){
@@ -588,7 +676,7 @@ body.presentation .hero-title{filter:drop-shadow(0 0 42px rgba(212,167,44,.3))}
   .ticket::after{display:none}
 }
 @media print{
-  .nav,.demo-dock,.guardian-bar,.toasts,.dots-nav,.mobile-menu,.drawer{display:none!important}
+  .nav,.demo-dock,.guardian-bar,.toasts,.dots-nav,.mobile-menu,.drawer,.guide,.guide-fab{display:none!important}
   body{background:#fff;color:#111}
 }
 </style>
@@ -642,6 +730,7 @@ body.presentation .hero-title{filter:drop-shadow(0 0 42px rgba(212,167,44,.3))}
       <a href="#revive">Revive</a>
       <a href="#map-section">Map</a>
       <a href="#three-d">3D</a>
+      <a href="#tours">Tours</a>
       <a href="#game">Game</a>
       <a href="#journey">Journey</a>
     </nav>
@@ -670,6 +759,7 @@ body.presentation .hero-title{filter:drop-shadow(0 0 42px rgba(212,167,44,.3))}
   <a href="#revive">Revive Egypt <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
   <a href="#map-section">Interactive Map <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
   <a href="#three-d">3D Experience <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+  <a href="#tours">3D &amp; Video Tours <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
   <a href="#timeline">Discovery Timeline <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
   <a href="#game">The Guardian's Trial <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
   <a href="#regions">Explore by Region <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
@@ -686,7 +776,25 @@ body.presentation .hero-title{filter:drop-shadow(0 0 42px rgba(212,167,44,.3))}
   <button class="dock-btn optional" id="demoBtn" aria-pressed="false" title="Run an automatic demonstration of the website">
     <i class="fa-solid fa-play" aria-hidden="true"></i> Demo Mode
   </button>
+  <button class="dock-btn" id="tourBtn" aria-pressed="false" title="Let an Egyptian guide walk you through every section">
+    <i class="fa-solid fa-person-walking" aria-hidden="true"></i> Guided Tour
+  </button>
+  <button class="dock-btn optional" id="guideToggle" aria-pressed="true" title="Turn the animated guides on or off">
+    <i class="fa-solid fa-ankh" aria-hidden="true"></i> Guide: On
+  </button>
 </div>
+
+<!-- animated Egyptian guides: explain sections and voice every notification -->
+<div class="guide" id="guide">
+  <div class="guide-fig" id="guideFig" role="button" tabindex="0" aria-label="Animated guide. Click for a tip about this section."></div>
+  <div class="guide-bubble" id="guideBubble" role="status" aria-live="polite">
+    <button class="guide-x" id="guideX" aria-label="Dismiss guide message">&times;</button>
+    <div class="guide-name" id="guideName"></div>
+    <p class="guide-text" id="guideText"></p>
+    <div class="guide-act" id="guideAct"></div>
+  </div>
+</div>
+<button class="guide-fab" id="guideFab" aria-label="Ask the guide for a tip"><i class="fa-solid fa-ankh" aria-hidden="true"></i></button>
 
 <!-- presentation dot navigation -->
 <nav class="dots-nav" id="dotsNav" aria-label="Section navigation"></nav>
@@ -698,6 +806,8 @@ body.presentation .hero-title{filter:drop-shadow(0 0 42px rgba(212,167,44,.3))}
      ===================================================================== -->
 <section class="hero grain" id="home" aria-labelledby="heroTitle">
   <div class="hero-sky" aria-hidden="true"></div>
+  <div class="hero-photo" id="heroPhoto" aria-hidden="true"></div>
+  <a class="hero-credit" id="heroCredit" href="#" target="_blank" rel="noopener"></a>
   <div class="hero-stars" data-parallax="0.12" aria-hidden="true"></div>
   <canvas class="hero-canvas" id="heroCanvas" aria-hidden="true"></canvas>
 
@@ -1126,6 +1236,30 @@ body.presentation .hero-title{filter:drop-shadow(0 0 42px rgba(212,167,44,.3))}
       <i class="fa-solid fa-code" aria-hidden="true"></i>
       Replace the geometry with an approved model by setting <code>CONFIG.modelGLB</code> to your <code>.glb</code> URL.
       If that file is missing or fails, the procedural scene stays on screen — nothing breaks.
+    </p>
+  </div>
+</section>
+
+<!-- =====================================================================
+     SECTION 5b — REAL 3D MODELS, VIDEO TOURS & SATELLITE VIEWS
+     ===================================================================== -->
+<section class="band" id="tours" aria-labelledby="toursTitle">
+  <div class="wrap">
+    <div class="section-head" data-reveal>
+      <span class="eyebrow">Real 3D models · Video tours · Satellite</span>
+      <h2 id="toursTitle">Step inside the monuments</h2>
+      <p class="lead">
+        Choose a monument to see it in real photography. Where a real 3D model or video tour is linked you can walk
+        around it; every site also opens in a satellite view, so there is always something to explore.
+      </p>
+    </div>
+    <div class="tour-layout" data-reveal>
+      <div class="tour-list" id="tourList" aria-label="Choose a monument"></div>
+      <div class="tour-stage" id="tourStage" aria-live="polite"></div>
+    </div>
+    <p class="tiny muted mt-1">
+      <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+      3D models are hosted on Sketchfab and credited beside each model. Photographs come from Wikipedia / Wikimedia Commons.
     </p>
   </div>
 </section>
@@ -1669,7 +1803,7 @@ body.presentation .hero-title{filter:drop-shadow(0 0 42px rgba(212,167,44,.3))}
     <div class="divider"></div>
     <p class="tiny muted center" style="margin:0">
       © <span id="year">2026</span> Guardians of Egypt · DEPI Digital Marketing Specialist Graduation Project ·
-      Built as a single self-contained HTML file. Map data © OpenStreetMap contributors, imagery © Esri and partners.
+      Built as a single self-contained HTML file. Map data © OpenStreetMap contributors, imagery © Esri and partners. Photographs via Wikipedia / Wikimedia Commons (author and licence on each file page). 3D models via Sketchfab, credited beside each model.
     </p>
   </div>
 </footer>
@@ -1934,6 +2068,7 @@ const Store = (function () {
 /* Tiny analytics stub — shows how GA4 events would be fired in a live campaign */
 window.GOE = window.GOE || {};
 window.GOE.events = [];
+let guideHook = null; /* set by the animated guides: they voice site notifications */
 function trackEvent(name, params) {
   window.GOE.events.push({ name: name, params: params || {}, at: new Date().toISOString() });
   // In a live deployment this is where GA4 / Meta Pixel would receive the event:
@@ -1988,6 +2123,13 @@ const CONFIG = {
         images: { "giza-pyramids": "images/giza.jpg" }
      Any failing image falls back to the SVG art automatically.          */
   images: {},
+
+  /* --- NEW: live photographs and animated guides ---------------------
+     wikiPhotos: true  -> real photos are loaded from Wikipedia/Wikimedia.
+                          Set to false to use only the built-in SVG art.
+     guide:      true  -> animated Egyptian guides are on by default.     */
+  wikiPhotos: true,
+  guide: true,
 
   /* --- Campaign targets used by the demo dashboard ------------------- */
   demoMetrics: true
@@ -2538,13 +2680,14 @@ function artSVG(site, opts) {
            '<path d="M0 128 C 70 112 140 140 210 124 C 250 116 280 130 300 122 L300 180 L0 180 Z" fill="url(#g' + sid + ')" opacity=".55"/>' +
            '<g stroke="url(#g' + sid + ')" stroke-width="2" fill="none" opacity=".8"><path d="M40 150 q14 -16 28 0 q14 16 28 0"/><path d="M200 150 q14 -16 28 0"/></g>';
   }
-  return head + body + '</svg>';
+  return head + body + '</svg>' + photoTag(site);
 }
 
 /* =========================================================================
    04 · UI CORE — toasts, modals, nav, reveal, counters, search
    ========================================================================= */
 function toast(message, type, ms) {
+  if (guideHook && guideHook(message, type, ms)) return; /* an animated guide delivers it */
   const box = $("#toasts");
   if (!box) return;
   const el = document.createElement("div");
@@ -2990,6 +3133,7 @@ function sitePanelHTML(s) {
     '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">' +
       '<button class="btn btn-sm" data-act="journey" data-id="' + s.id + '"><i class="fa-solid fa-plus"></i> ' + (progress.inJourney(s.id) ? "In your journey" : "Add to My Journey") + '</button>' +
       (s.model ? '<button class="btn btn-sm btn-ghost" data-act="3d" data-id="' + s.id + '"><i class="fa-solid fa-cube"></i> Explore in 3D</button>' : '') +
+      tourBtn(s) +
     '</div>';
 }
 function openSiteModal(s) {
@@ -2999,6 +3143,7 @@ function openSiteModal(s) {
   t.textContent = s.name;
   b.innerHTML =
     '<div class="card-art" style="height:210px;margin:0 0 16px">' + artSVG(s) + '<span class="art-caption">' + escapeHTML(s.category) + " · " + escapeHTML(s.era) + '</span></div>' +
+    '<p class="tiny muted photo-credit" data-credit="' + s.id + '" style="margin:-8px 0 14px"></p>' +
     '<div class="grid g-2"><div>' +
       '<div class="kv"><b>Era</b><span>' + escapeHTML(s.era) + '</span></div>' +
       '<div class="kv"><b>Region</b><span>' + escapeHTML(s.region) + '</span></div>' +
@@ -3013,6 +3158,7 @@ function openSiteModal(s) {
       '<button class="btn btn-sm" data-act="journey" data-id="' + s.id + '"><i class="fa-solid fa-route"></i> Add to My Journey</button>' +
       '<button class="btn btn-sm btn-ghost" data-act="focus" data-id="' + s.id + '"><i class="fa-solid fa-map-location-dot"></i> Show on map</button>' +
       (s.model ? '<button class="btn btn-sm btn-ghost" data-act="3d" data-id="' + s.id + '"><i class="fa-solid fa-cube"></i> Explore in 3D</button>' : '') +
+      tourBtn(s) +
     '</div>';
   openModal("siteModal");
   progress.viewSite(s.id);
@@ -4101,6 +4247,525 @@ async function demoPlayGame() {
 }
 
 /* =========================================================================
+   15b · NEW — REAL PHOTOS (Wikipedia / Wikimedia Commons)
+   -------------------------------------------------------------------------
+   Every site card, panel and modal now shows a real photograph. The photo is
+   looked up once from Wikipedia's public REST API (free licences, CORS
+   enabled, no key needed) and cached in localStorage. If the lookup fails or
+   you are offline, the built-in SVG illustration stays visible — nothing
+   ever shows a broken image.
+   To use your own licensed photos instead, fill CONFIG.images = {id:"file"}.
+   ========================================================================= */
+const PHOTO_MAP = {
+  "giza-pyramids":"Great_Pyramid_of_Giza", "gem":"Grand_Egyptian_Museum", "gem-conservation":"Khufu_ship",
+  "saqqara":"Pyramid_of_Djoser", "dahshur-bent":"Bent_Pyramid", "dahshur-red":"Red_Pyramid", "memphis":"Memphis,_Egypt",
+  "meidum":"Meidum", "egyptian-museum":"Egyptian_Museum", "nmec":"National_Museum_of_Egyptian_Civilization",
+  "islamic-museum":"Museum_of_Islamic_Art,_Cairo", "coptic-museum":"Coptic_Museum", "hanging-church":"Hanging_Church",
+  "ibn-tulun":"Mosque_of_Ibn_Tulun", "al-azhar":"Al-Azhar_Mosque", "citadel":"Citadel_of_Cairo",
+  "al-hakim":"Al-Hakim_Mosque", "sultan-hassan":"Mosque-Madrasa_of_Sultan_Hassan", "khan-el-khalili":"Khan_el-Khalili",
+  "bab-zuweila":"Bab_Zuweila", "baron-empain":"Baron_Empain_Palace", "karnak":"Karnak", "luxor-temple":"Luxor_Temple",
+  "valley-kings":"Valley_of_the_Kings", "hatshepsut":"Mortuary_Temple_of_Hatshepsut", "medinet-habu":"Medinet_Habu",
+  "colossi-memnon":"Colossi_of_Memnon", "deir-el-medina":"Deir_el-Medina", "luxor-museum":"Luxor_Museum",
+  "esna":"Temple_of_Esna", "edfu":"Temple_of_Edfu", "kom-ombo":"Kom_Ombo", "abydos":"Abydos,_Egypt",
+  "dendera":"Dendera_Temple_complex", "beni-hassan":"Beni_Hasan", "amarna":"Amarna", "abu-simbel":"Abu_Simbel_temples",
+  "philae":"Philae", "kalabsha":"Temple_of_Kalabsha", "unfinished-obelisk":"Unfinished_obelisk", "nubian-museum":"Nubia_Museum",
+  "tanis":"Tanis", "bubastis":"Bubastis", "abu-mena":"Abu_Mena", "wadi-hitan":"Wadi_Al-Hitan", "karanis":"Karanis",
+  "hibis":"Temple_of_Hibis", "bagawat":"Bagawat", "al-qasr":"Al-Qasr,_Dakhla", "catacombs":"Catacombs_of_Kom_El_Shoqafa",
+  "pompey":"Pompey's_Pillar", "kom-el-dikka":"Kom_El_Dikka", "qaitbay":"Citadel_of_Qaitbay",
+  "bibliotheca":"Bibliotheca_Alexandrina", "st-catherine":"Saint_Catherine's_Monastery", "st-anthony":"Monastery_of_Saint_Anthony"
+};
+const photoCache = Store.get("goe_photos_v2", {});
+const photoMiss = {};
+const photoPending = {};
+const photoQueue = [];
+let photoActive = 0;
+function siteById(id) { return heritageSites.filter(function (x) { return x.id === id; })[0]; }
+function pumpPhotos() { while (photoActive < 4 && photoQueue.length) photoQueue.shift()(); }
+function photoJob(fn) {
+  return new Promise(function (resolve) {
+    photoQueue.push(function () {
+      photoActive++;
+      fn().then(function (v) { resolve(v); }, function () { resolve(null); }).then(function () { photoActive--; pumpPhotos(); });
+    });
+    pumpPhotos();
+  });
+}
+function wikiJSON(url) {
+  return fetch(url, { headers: { "Accept": "application/json" } }).then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); });
+}
+function summaryPhoto(title, width) {
+  return wikiJSON("https://en.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(title)).then(function (d) {
+    const th = d.thumbnail, og = d.originalimage;
+    let src = "";
+    if (og && og.source) {
+      /* never ask Wikimedia for a thumbnail larger than the original */
+      src = (th && th.source && og.width && og.width > width) ? th.source.replace(/\/(\d+)px-/, "/" + width + "px-") : og.source;
+    } else if (th && th.source) src = th.source;
+    if (!src) throw new Error("no image");
+    const page = d.content_urls && d.content_urls.desktop ? d.content_urls.desktop.page : "https://en.wikipedia.org/wiki/" + encodeURIComponent(title);
+    return { src: src, page: page, title: d.title || title.replace(/_/g, " ") };
+  });
+}
+const PHOTO_STOP = "temple tomb tombs mosque museum church monastery pyramid great step national tell lost golden city village fortress the and of".split(" ");
+function searchPhoto(name) {
+  const q = name.replace(/\([^)]*\)/g, "").replace(/[“”"']/g, "").trim();
+  const key = (q.toLowerCase().split(/[\s,]+/).filter(function (w) { return w.length > 3 && PHOTO_STOP.indexOf(w) < 0; })[0] || "").slice(0, 5);
+  return wikiJSON("https://en.wikipedia.org/w/rest.php/v1/search/title?limit=3&q=" + encodeURIComponent(q)).then(function (d) {
+    const pages = ((d && d.pages) || []).filter(function (pg) { return !key || String(pg.title).toLowerCase().indexOf(key) > -1; });
+    let chain = Promise.reject(new Error("none"));
+    pages.forEach(function (pg) { chain = chain.catch(function () { return summaryPhoto(pg.key, 960); }); });
+    return chain;
+  });
+}
+function getPhoto(id) {
+  if (CONFIG.images && CONFIG.images[id]) return Promise.resolve({ src: CONFIG.images[id], page: "", title: "", own: true });
+  if (CONFIG.wikiPhotos === false || !window.fetch) return Promise.resolve(null);
+  if (photoCache[id]) return Promise.resolve(photoCache[id]);
+  if (photoMiss[id]) return Promise.resolve(null);
+  if (photoPending[id]) return photoPending[id];
+  const s = siteById(id);
+  if (!s) return Promise.resolve(null);
+  photoPending[id] = photoJob(function () {
+    const t = PHOTO_MAP[id];
+    return (t ? summaryPhoto(t, 960) : Promise.reject(new Error("unmapped"))).catch(function () { return searchPhoto(s.name); });
+  }).then(function (p) {
+    delete photoPending[id];
+    if (p) { photoCache[id] = p; Store.set("goe_photos_v2", photoCache); } else photoMiss[id] = 1;
+    return p;
+  });
+  return photoPending[id];
+}
+/* returned by artSVG: an <img> laid on top of the SVG illustration */
+function photoTag(site) {
+  if (!site || !site.id || !siteById(site.id)) return "";
+  return '<img class="real-photo" data-photo="' + site.id + '" alt="Photograph of ' + escapeHTML(site.name || "") + '" loading="lazy" decoding="async" referrerpolicy="no-referrer">';
+}
+function hydratePhotos() {
+  $$("img.real-photo[data-photo]:not([data-state])").forEach(function (img) {
+    img.setAttribute("data-state", "loading");
+    getPhoto(img.getAttribute("data-photo")).then(function (p) {
+      if (!p) { img.setAttribute("data-state", "none"); return; }
+      img.onload = function () {
+        img.classList.add("ok"); img.setAttribute("data-state", "ok");
+        if (img.parentElement) img.parentElement.classList.add("has-photo");
+      };
+      img.onerror = function () { img.setAttribute("data-state", "none"); img.remove(); };
+      img.src = p.src;
+    });
+  });
+  $$("[data-credit]:not([data-done])").forEach(function (el) {
+    el.setAttribute("data-done", "1");
+    getPhoto(el.getAttribute("data-credit")).then(function (p) {
+      if (!p) return;
+      el.innerHTML = '<i class="fa-solid fa-camera" aria-hidden="true"></i> ' + (p.own
+        ? "Photo: campaign team"
+        : 'Photo via <a href="' + escapeHTML(p.page) + '" target="_blank" rel="noopener">' + escapeHTML(p.title) + " — Wikipedia</a> · Wikimedia Commons (free licence; author listed on the file page)");
+    });
+  });
+}
+function initPhotos() {
+  hydratePhotos();
+  if (!window.MutationObserver) return;
+  let t = null;
+  new MutationObserver(function () { clearTimeout(t); t = setTimeout(hydratePhotos, 120); }).observe(document.body, { childList: true, subtree: true });
+}
+function initHeroPhotos() {
+  const box = $("#heroPhoto"), credit = $("#heroCredit");
+  if (!box || CONFIG.wikiPhotos === false || !window.fetch) return;
+  const titles = ["Great_Pyramid_of_Giza", "Abu_Simbel_temples", "Karnak", "Philae", "Temple_of_Edfu"];
+  const slides = [];
+  let cur = -1;
+  function show(i) {
+    if (!slides.length) return;
+    cur = i % slides.length;
+    slides.forEach(function (s, k) { s.img.classList.toggle("on", k === cur); });
+    if (credit) { credit.href = slides[cur].page; credit.textContent = "📷 " + slides[cur].title + " · Wikimedia Commons"; credit.classList.add("on"); }
+  }
+  titles.forEach(function (t) {
+    summaryPhoto(t, 1280).then(function (p) {
+      const im = new Image();
+      im.alt = ""; im.decoding = "async"; im.referrerPolicy = "no-referrer";
+      im.onload = function () { box.appendChild(im); slides.push({ img: im, page: p.page, title: p.title }); if (slides.length === 1) show(0); };
+      im.src = p.src;
+    }).catch(function () {});
+  });
+  if (!REDUCED) setInterval(function () { if (slides.length > 1 && !document.hidden) show(cur + 1); }, 8000);
+}
+
+/* =========================================================================
+   15c · NEW — 3D MODELS, VIDEO TOURS & SATELLITE VIEWS
+   -------------------------------------------------------------------------
+   Each tour can have: a Sketchfab model (sketchfab:"<32-char id>"), a YouTube
+   video (youtube:"<11-char id>"), and always a satellite view (from lat/lng).
+   The stage picks the best one automatically: 3D → video → satellite.
+   Only the Great Pyramid model below has been verified (CC BY, credited).
+   To add more, paste the id here — or, without touching code, paste a link
+   into the box under the viewer (it is remembered in this browser).
+   ========================================================================= */
+const TOURS = [
+  { id: "giza-pyramids",
+    sketchfab: "4a251113722f4d969b6cf2ca5f35c502",
+    credit: { title: "The Great Pyramid of Giza", author: "ianicolo", license: "CC Attribution",
+              url: "https://sketchfab.com/3d-models/the-great-pyramid-of-giza-4a251113722f4d969b6cf2ca5f35c502" } },
+  { id: "saqqara" },       /* add  sketchfab:"…"  and/or  youtube:"…"  to any line */
+  { id: "gem" },
+  { id: "karnak" },
+  { id: "luxor-temple" },
+  { id: "valley-kings" },
+  { id: "hatshepsut" },
+  { id: "abu-simbel" },
+  { id: "philae" },
+  { id: "edfu" },
+  { id: "citadel" },
+  { id: "qaitbay" }
+];
+const TOUR_IDS = {};
+TOURS.forEach(function (t) { TOUR_IDS[t.id] = t; });
+function tourBtn(s) {
+  return TOUR_IDS[s.id] ? '<button class="btn btn-sm btn-ghost" data-act="tour" data-id="' + s.id + '"><i class="fa-solid fa-vr-cardboard"></i> 3D / video tour</button>' : "";
+}
+function tourMedia(id) {
+  const t = TOUR_IDS[id] || {}, c = (Store.get("goe_tour_custom", {}) || {})[id] || {};
+  return { sketchfab: c.sketchfab || t.sketchfab || "", youtube: c.youtube || t.youtube || "", credit: c.sketchfab ? null : t.credit, custom: !!(c.sketchfab || c.youtube) };
+}
+function parseTourLink(txt) {
+  txt = String(txt || "").trim();
+  if (!txt) return null;
+  let m;
+  if (/sketchfab\.com/i.test(txt) && (m = txt.match(/([a-f0-9]{32})/i))) return { sketchfab: m[1].toLowerCase() };
+  if ((m = txt.match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|shorts\/|live\/))([\w-]{11})/i))) return { youtube: m[1] };
+  if (/^[a-f0-9]{32}$/i.test(txt)) return { sketchfab: txt.toLowerCase() };
+  if (/^[\w-]{11}$/.test(txt)) return { youtube: txt };
+  return null;
+}
+const Tours = {
+  sel: null, mode: null,
+  list: function () {
+    const box = $("#tourList");
+    if (!box) return;
+    box.innerHTML = TOURS.map(function (t) {
+      const s = siteById(t.id);
+      if (!s) return "";
+      const m = tourMedia(t.id);
+      return '<button class="tour-item' + (t.id === Tours.sel ? " active" : "") + '" data-tour="' + t.id + '" aria-pressed="' + (t.id === Tours.sel) + '">' +
+        '<span class="th">' + artSVG(s) + "</span><span><b>" + escapeHTML(s.name) + "</b><small>" +
+        (m.sketchfab ? '<span class="tag t3d">3D model</span>' : "") + (m.youtube ? '<span class="tag tvid">Video</span>' : "") +
+        '<span class="tag">Satellite</span></small></span></button>';
+    }).join("");
+  },
+  select: function (id, mode, speak) {
+    const s = siteById(id);
+    if (!s) return;
+    Tours.sel = id;
+    Tours.list();
+    Tours.stage(mode);
+    trackEvent("tour_select", { site: s.name });
+    if (speak && Guide.say) Guide.say({ who: "nefertiti", title: s.name, text: s.description });
+  },
+  stage: function (mode) {
+    const box = $("#tourStage"), s = siteById(Tours.sel);
+    if (!box || !s) return;
+    const m = tourMedia(s.id);
+    mode = mode || (m.sketchfab ? "3d" : m.youtube ? "video" : "aerial");
+    if (mode === "3d" && !m.sketchfab) mode = m.youtube ? "video" : "aerial";
+    if (mode === "video" && !m.youtube) mode = "aerial";
+    Tours.mode = mode;
+    const q = encodeURIComponent(s.name.replace(/\([^)]*\)/g, "").trim());
+    const label = { "3d": "Load the 3D model", video: "Play the video tour", aerial: "Open the satellite view" }[mode];
+    let badge;
+    if (mode === "3d") badge = m.credit
+      ? '<span class="badge badge--verified"><i class="fa-solid fa-cube"></i> Real 3D model · ' + escapeHTML(m.credit.license) + "</span>"
+      : '<span class="badge badge--verified"><i class="fa-solid fa-cube"></i> 3D model linked by the team</span>';
+    else if (mode === "video") badge = '<span class="badge badge--verified"><i class="fa-solid fa-film"></i> Video tour</span>';
+    else badge = '<span class="badge badge--soft"><i class="fa-solid fa-satellite"></i> Satellite view</span>';
+    const note = (mode === "aerial" && !m.sketchfab && !m.youtube)
+      ? '<p class="tiny muted" style="padding:0 16px 8px;margin:0">No 3D model or video is linked for this site yet — explore it from above, search for one below, or paste a link to attach it.</p>' : "";
+    box.innerHTML =
+      '<div class="tour-head"><div><span class="eyebrow">' + escapeHTML(s.region) + " · " + escapeHTML(s.era) + "</span><h3>" + escapeHTML(s.name) + "</h3></div>" + badge + "</div>" +
+      '<div class="tour-modes" role="group" aria-label="View mode">' +
+        '<button class="chip' + (mode === "3d" ? " active" : "") + '" data-mode="3d"' + (m.sketchfab ? "" : " disabled style=\"opacity:.4;pointer-events:none\"") + '><i class="fa-solid fa-cube"></i> 3D model</button>' +
+        '<button class="chip' + (mode === "video" ? " active" : "") + '" data-mode="video"' + (m.youtube ? "" : " disabled style=\"opacity:.4;pointer-events:none\"") + '><i class="fa-solid fa-film"></i> Video tour</button>' +
+        '<button class="chip' + (mode === "aerial" ? " active" : "") + '" data-mode="aerial"><i class="fa-solid fa-satellite"></i> Satellite</button>' +
+      "</div>" + note +
+      '<div class="tour-frame" id="tourFrame"><button class="tour-poster" data-load="1" aria-label="' + label + '">' +
+        '<span class="card-art" style="position:absolute;inset:0;border-radius:0">' + artSVG(s) + "</span>" +
+        '<span class="play"><i class="fa-solid fa-play" aria-hidden="true"></i>' + label + "</span></button></div>" +
+      '<div class="tour-bar">' +
+        (m.credit ? '<span class="tiny muted" style="flex:1 1 100%">3D model “' + escapeHTML(m.credit.title) + '” by <a href="' + m.credit.url + '" target="_blank" rel="noopener" style="color:var(--gold-light)">' + escapeHTML(m.credit.author) + "</a> on Sketchfab · " + escapeHTML(m.credit.license) + "</span>" : "") +
+        '<a class="btn btn-sm btn-ghost" target="_blank" rel="noopener" href="https://sketchfab.com/search?q=' + q + '&type=models"><i class="fa-solid fa-cube"></i> Find 3D models</a>' +
+        '<a class="btn btn-sm btn-ghost" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=' + q + '+virtual+tour+4K"><i class="fa-brands fa-youtube"></i> Find video tours</a>' +
+        '<button class="btn btn-sm btn-ghost" data-act="focus" data-id="' + s.id + '"><i class="fa-solid fa-map-location-dot"></i> On the map</button>' +
+        '<button class="btn btn-sm" data-act="journey" data-id="' + s.id + '"><i class="fa-solid fa-route"></i> Add to My Journey</button>' +
+        (s.model ? '<button class="btn btn-sm btn-ghost" data-act="3d" data-id="' + s.id + '"><i class="fa-solid fa-gem"></i> Educational 3D viewer</button>' : "") +
+      "</div>" +
+      '<div class="tour-paste"><input id="tourPaste" type="text" placeholder="Paste a Sketchfab or YouTube link to attach it to this site" aria-label="Paste a Sketchfab or YouTube link">' +
+        '<button class="btn btn-sm" id="tourPasteBtn"><i class="fa-solid fa-link"></i> Attach</button>' +
+        (m.custom ? '<button class="btn btn-sm btn-ghost" id="tourResetBtn"><i class="fa-solid fa-rotate-left"></i> Remove my link</button>' : "") + "</div>" +
+      '<p class="tiny muted photo-credit" data-credit="' + s.id + '" style="padding:0 16px 14px;margin:0"></p>';
+  },
+  load: function () {
+    const frame = $("#tourFrame"), s = siteById(Tours.sel);
+    if (!frame || !s) return;
+    const m = tourMedia(s.id);
+    let src, allow = "autoplay; fullscreen; xr-spatial-tracking";
+    if (Tours.mode === "3d") src = "https://sketchfab.com/models/" + m.sketchfab + "/embed?autostart=1&ui_theme=dark&dnt=1";
+    else if (Tours.mode === "video") { src = "https://www.youtube-nocookie.com/embed/" + m.youtube + "?rel=0&modestbranding=1"; allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"; }
+    else src = "https://maps.google.com/maps?q=" + s.lat + "," + s.lng + "&t=k&z=17&output=embed";
+    frame.innerHTML = '<iframe title="' + escapeHTML(s.name) + " — " + Tours.mode + '" src="' + src + '" allow="' + allow + '" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+    trackEvent("tour_load", { site: s.name, mode: Tours.mode });
+    progress.viewSite(s.id);
+  },
+  attach: function () {
+    const inp = $("#tourPaste");
+    const parsed = parseTourLink(inp && inp.value);
+    if (!parsed) { toast("That does not look like a Sketchfab or YouTube link. Paste the full address from your browser.", "warn", 5000); return; }
+    const all = Store.get("goe_tour_custom", {}) || {};
+    all[Tours.sel] = Object.assign(all[Tours.sel] || {}, parsed);
+    Store.set("goe_tour_custom", all);
+    Tours.list();
+    Tours.stage(parsed.sketchfab ? "3d" : "video");
+    toast((parsed.sketchfab ? "3D model" : "Video tour") + " attached. Press play to load it.", "ok", 4200);
+  },
+  reset: function () {
+    const all = Store.get("goe_tour_custom", {}) || {};
+    delete all[Tours.sel];
+    Store.set("goe_tour_custom", all);
+    Tours.list(); Tours.stage();
+    toast("Your link was removed.", "ok", 2600);
+  }
+};
+function initTours() {
+  Tours.sel = TOURS[0].id;
+  Tours.list();
+  Tours.stage();
+  on($("#tourList"), "click", function (e) {
+    const b = e.target.closest("[data-tour]");
+    if (b) Tours.select(b.getAttribute("data-tour"), null, true);
+  });
+  on($("#tourStage"), "click", function (e) {
+    const md = e.target.closest("[data-mode]");
+    if (md) { Tours.stage(md.getAttribute("data-mode")); return; }
+    if (e.target.closest("[data-load]")) { Tours.load(); return; }
+    if (e.target.closest("#tourPasteBtn")) { Tours.attach(); return; }
+    if (e.target.closest("#tourResetBtn")) Tours.reset();
+  });
+  on($("#tourStage"), "keydown", function (e) { if (e.key === "Enter" && e.target.id === "tourPaste") Tours.attach(); });
+}
+
+/* =========================================================================
+   15d · NEW — ANIMATED EGYPTIAN GUIDES
+   -------------------------------------------------------------------------
+   Five animated characters (pure SVG + CSS, no files needed) explain each
+   section as you scroll, voice every site notification, and can lead a
+   Guided Tour. Turn them off with the "Guide" button; the choice is saved.
+   ========================================================================= */
+const GUIDE_WHO = {
+  ramesses:   { name: "Pharaoh Ramesses II", role: "Your host", skin: "#C68B59", dk: "#8F5B30", held: "scepter" },
+  nefertiti:  { name: "Queen Nefertiti", role: "Keeper of wonders", skin: "#D29A6C", dk: "#98643A", held: "ankh" },
+  imhotep:    { name: "Imhotep", role: "Architect & restorer", skin: "#B8794B", dk: "#7F4E2A", held: "scroll" },
+  hatshepsut: { name: "Pharaoh Hatshepsut", role: "Explorer & traveller", skin: "#CD9264", dk: "#92602F", held: "ankh" },
+  anubis:     { name: "Anubis", role: "Guardian of the sacred", skin: "#16181D", dk: "#000", held: "ankh" }
+};
+function figureSVG(kind) {
+  const w = GUIDE_WHO[kind] || GUIDE_WHO.ramesses, s = w.skin, dk = w.dk, gold = "#D4A72C", lapis = "#2E4E9E";
+  let back = "", front = "", face, held;
+  if (kind === "ramesses") {
+    back = '<path d="M33 74 Q32 40 60 38 Q88 40 87 74 L94 116 L78 110 L76 76 L44 76 L42 110 L26 116Z" fill="' + gold + '"/>' +
+           '<path d="M36 54 H84 M35 62 H85 M34 70 H86 M30 94 L44 98 M29 104 L43 107 M90 94 L76 98 M91 104 L77 107" stroke="' + lapis + '" stroke-width="2.2" fill="none"/>';
+    front = '<path d="M42 58 Q60 50 78 58" stroke="#F2CD6B" stroke-width="3" fill="none"/><path d="M60 57 q-5 -6 -1 -13 q2 -2 2 0 q4 7 -1 13z" fill="#F2CD6B"/>' +
+            '<path d="M56 100 h8 l-1.5 20 h-5z" fill="' + lapis + '"/>';
+  } else if (kind === "nefertiti") {
+    back = '<path d="M40 64 Q33 92 40 114 L53 104 L48 66Z M80 64 Q87 92 80 114 L67 104 L72 66Z" fill="#1B1F2B"/>' +
+           '<path d="M47 62 L38 16 L84 8 L73 62Z" fill="' + lapis + '"/><path d="M43 40 H80 M42 28 H81" stroke="' + gold + '" stroke-width="2"/>';
+    front = '<path d="M44 55 H76 V62 H44Z" fill="' + gold + '"/><path d="M60 55 q-5 -6 -1 -13 q2 -2 2 0 q4 7 -1 13z" fill="#F2CD6B"/>' +
+            '<circle cx="40" cy="92" r="2.6" fill="' + gold + '"/><circle cx="80" cy="92" r="2.6" fill="' + gold + '"/>';
+  } else if (kind === "imhotep") {
+    front = '<path d="M40 73 Q37 47 60 47 Q83 47 80 73 Q60 62 40 73Z" fill="#2B2118"/>';
+  } else if (kind === "hatshepsut") {
+    back = '<path d="M33 74 Q32 42 60 40 Q88 42 87 74 L90 114 L76 108 L75 76 L45 76 L44 108 L30 114Z" fill="#C4592E"/>' +
+           '<path d="M36 56 H84 M35 64 H85 M31 96 L44 99 M30 106 L43 108 M89 96 L76 99 M90 106 L77 108" stroke="' + gold + '" stroke-width="2.2" fill="none"/>';
+    front = '<path d="M42 59 Q60 51 78 59" stroke="' + gold + '" stroke-width="3" fill="none"/><path d="M60 58 q-5 -6 -1 -13 q2 -2 2 0 q4 7 -1 13z" fill="#F2CD6B"/>' +
+            '<path d="M57 100 h6 l-1 15 h-4z" fill="' + gold + '"/><circle cx="41" cy="93" r="2.4" fill="' + gold + '"/><circle cx="79" cy="93" r="2.4" fill="' + gold + '"/>';
+  }
+  if (kind === "anubis") {
+    back = '<path d="M40 66 L27 14 L55 52Z M80 66 L93 14 L65 52Z" fill="#16181D"/><path d="M40 57 L33 26 L51 50Z M80 57 L87 26 L69 50Z" fill="' + gold + '" opacity=".85"/>';
+    face = '<ellipse cx="60" cy="76" rx="21" ry="22" fill="#16181D"/><path d="M50 78 Q50 108 60 113 Q70 108 70 78Z" fill="#262A33"/>' +
+           '<ellipse cx="60" cy="108" rx="5.5" ry="3.4" fill="#000"/>' +
+           '<path d="M42 71 Q50 65 57 71 Q50 75 42 71Z" fill="' + gold + '"/><path d="M63 71 Q70 65 78 71 Q70 75 63 71Z" fill="' + gold + '"/>' +
+           '<circle cx="50" cy="70.5" r="2" fill="#111"/><circle cx="70" cy="70.5" r="2" fill="#111"/>' +
+           '<path d="M40 71 L33 68 M80 71 L87 68" stroke="#000" stroke-width="2.4" stroke-linecap="round"/>' +
+           '<rect class="fig-lid" x="42" y="65" width="15" height="11" fill="#16181D"/><rect class="fig-lid" x="63" y="65" width="15" height="11" fill="#16181D"/>' +
+           '<ellipse class="fig-mouth" cx="60" cy="97" rx="3.6" ry="1" fill="#E8B4A0"/>' +
+           '<path d="M42 56 Q60 48 78 56" stroke="' + gold + '" stroke-width="3" fill="none"/>';
+  } else {
+    face = '<ellipse cx="60" cy="78" rx="20" ry="24" fill="' + s + '"/>' +
+           '<path d="M43 76 Q51 69 59 76 Q51 81 43 76Z" fill="#fff"/><path d="M61 76 Q69 69 77 76 Q69 81 61 76Z" fill="#fff"/>' +
+           '<circle cx="51" cy="76" r="2.6" fill="#1A1208"/><circle cx="69" cy="76" r="2.6" fill="#1A1208"/>' +
+           '<path d="M41 76 L35 74 M79 76 L85 74 M43 71.5 Q51 66.5 59 71.5 M61 71.5 Q69 66.5 77 71.5" stroke="#111" stroke-width="2.3" fill="none" stroke-linecap="round"/>' +
+           '<rect class="fig-lid" x="42" y="68" width="18" height="13" fill="' + s + '"/><rect class="fig-lid" x="60" y="68" width="18" height="13" fill="' + s + '"/>' +
+           '<path d="M60 78 L57 88 Q60 90 63 88" stroke="' + dk + '" stroke-width="1.6" fill="none" stroke-linecap="round"/>' +
+           '<ellipse class="fig-mouth" cx="60" cy="96" rx="5" ry="1.4" fill="#7A2E1F"/>';
+  }
+  if (w.held === "ankh") held = '<ellipse cx="14" cy="82" rx="6" ry="8" fill="none" stroke="' + gold + '" stroke-width="3"/><path d="M14 90 V128 M6 99 H22" stroke="' + gold + '" stroke-width="3" stroke-linecap="round"/>';
+  else if (w.held === "scroll") held = '<rect x="5" y="92" width="18" height="26" rx="3" fill="#EBDDB0" stroke="#B9A681"/><path d="M9 100 H19 M9 106 H19 M9 112 H16" stroke="#8A6A16" stroke-width="1.4"/>';
+  else held = '<path d="M14 142 V76" stroke="' + gold + '" stroke-width="3.4" stroke-linecap="round"/><path d="M14 76 q-7 -3 -4 -10 M14 76 q7 -3 4 -10" stroke="' + gold + '" stroke-width="3" fill="none" stroke-linecap="round"/>';
+  return '<svg viewBox="0 0 120 160" role="img" aria-label="' + escapeHTML(w.name) + '">' +
+    '<defs><radialGradient id="fgl"><stop offset="0" stop-color="#F2CD6B" stop-opacity=".38"/><stop offset="1" stop-color="#F2CD6B" stop-opacity="0"/></radialGradient></defs>' +
+    '<circle class="fig-glow" cx="60" cy="88" r="68" fill="url(#fgl)"/>' +
+    '<g class="fig-body">' + held +
+      '<path d="M20 160 L25 120 Q60 104 95 120 L100 160Z" fill="#F4EFE0"/><path d="M44 160 L46 124 M60 160 V120 M76 160 L74 124" stroke="#D9D2BE" stroke-width="1.5"/>' +
+      '<rect x="52" y="96" width="16" height="24" rx="6" fill="' + s + '"/>' +
+      back + face + front +
+      '<path d="M32 118 Q60 152 88 118 L82 111 Q60 134 38 111Z" fill="' + gold + '"/>' +
+      '<path d="M38 117 Q60 143 82 117" stroke="' + lapis + '" stroke-width="3.2" fill="none"/><path d="M42 122 Q60 147 78 122" stroke="#1FA79F" stroke-width="2.4" stroke-dasharray="3 3" fill="none"/>' +
+      '<path d="M26 126 Q12 126 14 108" stroke="' + s + '" stroke-width="10" stroke-linecap="round" fill="none"/><circle cx="14" cy="104" r="6.4" fill="' + s + '"/>' +
+      '<g class="fig-arm"><path d="M94 126 Q113 114 108 88" stroke="' + s + '" stroke-width="10" stroke-linecap="round" fill="none"/><circle cx="108" cy="82" r="6.6" fill="' + s + '"/><path d="M99 120 Q104 118 107 114" stroke="' + gold + '" stroke-width="4" stroke-linecap="round"/></g>' +
+    "</g></svg>";
+}
+const Guide = (function () {
+  const NOTES = {
+    home:          { who: "ramesses",   title: "Welcome, traveller", text: "I am Ramesses II, and I will be your host. Scroll down, or press “Guided Tour” and I will walk you through everything." },
+    about:         { who: "imhotep",    title: "The idea", text: "Guardians of Egypt rests on three verbs: Discover, Explore, Preserve. Egypt is a living archive — this campaign invites you to visit it and to protect it." },
+    campaigns:     { who: "imhotep",    title: "Three campaigns", text: "Egypt Uncovered shows hidden places, Discover Egypt features the icons, and Revive Egypt explains restoration. Open a card to read more." },
+    "map-section": { who: "hatshepsut", title: "The interactive map", text: "Filter by category, search by name, then tap a pin to read about a site and add it to your journey. Switch to satellite for the view from above." },
+    "three-d":     { who: "nefertiti",  title: "Architecture in 3D", text: "Drag to rotate, scroll to zoom and tap the golden hotspots to learn what each part of a pyramid, obelisk or temple is for." },
+    tours:         { who: "nefertiti",  title: "Step inside", text: "Pick a monument on the left. Where a real 3D model or video is linked you can walk around it; every site also has a satellite view." },
+    timeline:      { who: "imhotep",    title: "Recent discoveries", text: "Use the year filter to see what archaeologists have found in recent years. Egypt is still being discovered." },
+    "revive-now":  { who: "imhotep",    title: "Restoration", text: "Drag the slider to compare before and after. Careful conservation is why these stories remain readable for future generations." },
+    game:          { who: "ramesses",   title: "The Guardian's Trial", text: "Answer the questions to prove you are a Guardian. You will earn badges and a symbolic Golden Ticket — it is a campaign reward, not a real ticket." },
+    regions:       { who: "hatshepsut", title: "By region", text: "Choose a region to see its featured sites and plan your route, from Cairo and Giza to Luxor, Aswan, Alexandria and Sinai." },
+    journey:       { who: "hatshepsut", title: "My Egypt Journey", text: "Add sites you love and they gather here. You can export the list as a text file to plan your trip." },
+    responsible:   { who: "anubis",     title: "Be a Guardian", text: "Travel with care: follow site rules, stay on marked paths, keep your hands off painted walls and buy from local craftspeople." },
+    social:        { who: "nefertiti",  title: "Join the story", text: "Follow the campaign and share your own discoveries with " + (CONFIG.hashtag || "#GuardiansOfEgypt") + "." },
+    impact:        { who: "imhotep",    title: "Measuring impact", text: "These figures are demonstration values for the graduation project — they show how a real campaign could track its results." },
+    final:         { who: "ramesses",   title: "Thank you", text: "You have walked far, Guardian. Take the pledge, and carry Egypt's story with you." }
+  };
+  const TOUR_STEPS = ["home", "about", "campaigns", "map-section", "three-d", "tours", "timeline", "revive-now", "game", "journey", "responsible", "final"];
+  let el, fig, nameEl, textEl, actEl, timer, hideTimer, curWho = "", curSection = "home", tourIdx = -1, lastAuto = 0, enabled = true;
+  const born = Date.now(), seen = {};
+
+  function setFig(who) {
+    if (who === curWho || !fig) return;
+    curWho = who;
+    fig.innerHTML = figureSVG(who);
+  }
+  function say(o) {
+    if (!el || !enabled) return;
+    o = o || {};
+    const who = GUIDE_WHO[o.who] ? o.who : "ramesses";
+    setFig(who);
+    nameEl.innerHTML = escapeHTML(GUIDE_WHO[who].name) + "<small>" + escapeHTML(o.title || GUIDE_WHO[who].role) + "</small>";
+    textEl.innerHTML = o.html !== undefined ? o.html : escapeHTML(o.text || "");
+    actEl.innerHTML = (o.actions || []).map(function (a) {
+      return '<button class="btn btn-sm' + (a.ghost ? " btn-ghost" : "") + '" data-g="' + a.id + '">' + a.label + "</button>";
+    }).join("");
+    el.classList.remove("t-ok", "t-warn");
+    if (o.type === "ok") el.classList.add("t-ok");
+    if (o.type === "warn") el.classList.add("t-warn");
+    el.classList.add("show", "talk");
+    clearTimeout(timer); clearTimeout(hideTimer);
+    if (!o.sticky) timer = setTimeout(quiet, o.ms || clamp(3800 + String(o.text || o.html || "").length * 45, 4500, 12000));
+  }
+  function quiet() {
+    if (!el) return;
+    el.classList.remove("talk");
+    hideTimer = setTimeout(function () { if (tourIdx < 0) el.classList.remove("show"); }, 1800);
+  }
+  function notify(message, type, ms) {
+    say({
+      who: type === "ok" ? "nefertiti" : type === "warn" ? "anubis" : "imhotep",
+      title: type === "ok" ? "Well done" : type === "warn" ? "A word of caution" : "A note for you",
+      html: message, type: type, ms: ms ? clamp(ms + 1800, 4500, 12000) : 0
+    });
+  }
+  function autoNote(id) {
+    const n = NOTES[id];
+    if (!n || !enabled || seen[id] || tourIdx >= 0 || document.body.classList.contains("no-scroll")) return;
+    const wait = 2400 - (Date.now() - born);
+    if (wait > 0) { setTimeout(function () { autoNote(id); }, wait); return; }
+    if (Date.now() - lastAuto < 5000) return;
+    seen[id] = 1; lastAuto = Date.now();
+    say({ who: n.who, title: n.title, text: n.text });
+  }
+  function tip() {
+    const n = NOTES[curSection] || NOTES.home;
+    say({ who: n.who, title: n.title, text: n.text });
+  }
+  function step() {
+    const id = TOUR_STEPS[tourIdx], n = NOTES[id];
+    if (!n) return;
+    scrollToId("#" + id);
+    setTimeout(function () {
+      if (tourIdx < 0) return;
+      say({
+        who: n.who, title: "Stop " + (tourIdx + 1) + " of " + TOUR_STEPS.length + " · " + n.title, text: n.text, sticky: true,
+        actions: [{ id: "next", label: tourIdx < TOUR_STEPS.length - 1 ? 'Next <i class="fa-solid fa-arrow-right"></i>' : "Finish" }, { id: "stop", label: "Stop", ghost: true }]
+      });
+    }, REDUCED ? 100 : 800);
+  }
+  function startTour() {
+    if (!enabled) setEnabled(true);
+    tourIdx = 0; step(); setDockState();
+    trackEvent("guided_tour_start");
+  }
+  function endTour(done) {
+    tourIdx = -1; setDockState();
+    if (done) say({ who: "ramesses", title: "Tour complete", type: "ok", text: "You have seen the whole journey. Add sites to My Journey, take the Guardian's Trial, and take the pledge." });
+    else quiet();
+  }
+  function setDockState() {
+    const t = $("#tourBtn"), g = $("#guideToggle");
+    if (t) { t.classList.toggle("on", tourIdx >= 0); t.setAttribute("aria-pressed", tourIdx >= 0 ? "true" : "false"); }
+    if (g) { g.innerHTML = '<i class="fa-solid fa-ankh" aria-hidden="true"></i> Guide: ' + (enabled ? "On" : "Off"); g.setAttribute("aria-pressed", enabled ? "true" : "false"); g.classList.toggle("on", enabled); }
+  }
+  function setEnabled(on) {
+    enabled = !!on;
+    Store.set("goe_guide_on", enabled);
+    document.body.classList.toggle("guide-off", !enabled);
+    if (!enabled && el) { el.classList.remove("show", "talk"); tourIdx = -1; }
+    setDockState();
+    if (enabled) say({ who: "ramesses", title: "At your service", text: "I am here. Click me, or the golden ankh, whenever you want a tip about the section you are viewing." });
+    else toast("Guides are off. Notifications will appear as simple pop-ups.", "ok", 3200);
+  }
+  function init() {
+    el = $("#guide");
+    if (!el) return;
+    fig = $("#guideFig"); nameEl = $("#guideName"); textEl = $("#guideText"); actEl = $("#guideAct");
+    enabled = Store.get("goe_guide_on", true) !== false && CONFIG.guide !== false;
+    document.body.classList.toggle("guide-off", !enabled);
+    setDockState();
+    on(fig, "click", tip);
+    on(fig, "keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tip(); } });
+    on($("#guideFab"), "click", tip);
+    on($("#guideX"), "click", function () { if (tourIdx >= 0) endTour(false); else quiet(); });
+    on(el, "mouseenter", function () { clearTimeout(timer); clearTimeout(hideTimer); });
+    on(el, "mouseleave", function () { if (tourIdx < 0 && el.classList.contains("talk")) timer = setTimeout(quiet, 2600); });
+    on(el, "click", function (e) {
+      const b = e.target.closest("[data-g]");
+      if (!b) return;
+      const a = b.getAttribute("data-g");
+      if (a === "next") { tourIdx++; if (tourIdx >= TOUR_STEPS.length) endTour(true); else step(); }
+      if (a === "stop") endTour(false);
+    });
+    on($("#tourBtn"), "click", function () { if (tourIdx >= 0) endTour(false); else startTour(); });
+    on($("#guideToggle"), "click", function () { setEnabled(!enabled); });
+    guideHook = function (message, type, ms) {
+      if (!enabled || !el) return false;
+      notify(message, type, ms);
+      return true;
+    };
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { curSection = e.target.id; autoNote(e.target.id); } });
+      }, { rootMargin: "-42% 0px -52% 0px" });
+      Object.keys(NOTES).forEach(function (id) { const s = document.getElementById(id); if (s) io.observe(s); });
+    }
+  }
+  return { init: init, say: say, notify: notify, tip: tip, startTour: startTour, setEnabled: setEnabled, notes: NOTES };
+})();
+function initGuide() { Guide.init(); }
+
+/* =========================================================================
    16 · GLOBAL WIRING + BOOT
    ========================================================================= */
 function initGlobalClicks() {
@@ -4112,6 +4777,12 @@ function initGlobalClicks() {
       const s = heritageSites.filter(function (x) { return x.id === id; })[0];
       if (kind === "journey" && s) { journey.add(s.id); journey.render(); if (act.closest("#sitePanelBody") || act.closest("#siteModal")) selectSite(s.id, false); }
       if (kind === "details" && s) openSiteModal(s);
+      if (kind === "tour" && s) {
+        closeModal($(".modal.open"));
+        toggleDrawer(false);
+        scrollToId("#tours");
+        setTimeout(function () { Tours.select(s.id, null, true); }, 600);
+      }
       if (kind === "focus" && s) { closeModal($(".modal.open")); toggleDrawer(false); scrollToId("#map-section"); setTimeout(function () { selectSite(s.id, true); }, 500); }
       if (kind === "3d" && s) {
         closeModal($(".modal.open"));
@@ -4183,6 +4854,10 @@ function boot() {
   initPledge();
   initPresentation();
   initGlobalClicks();
+  initPhotos();
+  initHeroPhotos();
+  initTours();
+  initGuide();
 
   progress.load();
   journey.load();
@@ -4211,13 +4886,15 @@ function boot() {
   }
   /* small public API — handy for live presentations and for testing */
   window.GOE.api = {
-    version: "1.0",
+    version: "2.0",
     sites: heritageSites,
     discoveries: discoveries,
     progress: progress,
     journey: journey,
     openTicket: openTicketModal,
     setScene: setScene,
+    guide: Guide,
+    tours: Tours,
     selectSite: selectSite,
     applyMapFilter: applyMapFilter,
     runDemo: runDemo,
